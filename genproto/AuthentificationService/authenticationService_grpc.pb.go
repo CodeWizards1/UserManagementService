@@ -4,7 +4,7 @@
 // - protoc             v3.12.4
 // source: AuthenticationSevice/authenticationService.proto
 
-package authentication
+package AuthentificationService
 
 import (
 	context "context"
