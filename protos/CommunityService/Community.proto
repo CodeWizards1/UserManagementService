@@ -1,0 +1,175 @@
+syntax = "proto3";
+
+option go_package = "genproto/CommunityService";
+
+package CommunityServer;
+
+service CommunityService {
+    rpc CreateCommunity(CreateCommunityRequest) returns (CreateCommunityResponse) {}
+    rpc GetCommunityBy(GetCommunityRequest) returns (GetCommunityResponse) {}
+    rpc UpdateCommunity(UpdateCommunityRequest) returns (UpdateCommunityResponse) {}
+    rpc DeleteCommunity(DeleteCommunityRequest) returns (DeleteCommunityResponse) {}
+    rpc GetAllCommunity(GetAllCommunityRequest) returns (GetAllCommunityResponse) {}
+    rpc JoinCommunity(JoinCommunityRequest) returns (JoinCommunityResponse) {}
+    rpc LeaveCommunity(LeaveCommunityRequest) returns (LeaveCommunityResponse) {}
+    rpc CreateCommunityEvent(CreateCommunityEventRequest) returns (CreateCommunityEventResponse) {}
+    rpc GetCommunityEvent(GetCommunityEventRequest) returns (GetCommunityEventResponse) {}
+}
+
+service ForumService {
+    rpc CreateForum(CreateForumRequest) returns (CreateForumResponse) {}
+    rpc GetForum(GetForumRequest) returns (GetForumResponse) {}
+    rpc CreateForumComment(CreateForumCommentRequest) returns (CreateForumCommentResponse) {}
+}
+
+// Universal module for community response and request
+message Community {
+    string id = 1; // Added id field for better consistency in requests and responses
+    string name = 2;
+    string description = 3;
+    string location = 4;
+    string created_at = 5; // Added created_at and updated_at fields
+    string updated_at = 6;
+}
+
+message CommunityMember {
+    string id = 1;
+    string community_id = 2;
+    string user_id = 3;
+    string joined_at = 4;
+}
+
+message Event {
+    string id = 1;
+    string community_id = 2;
+    string name = 3;
+    string description = 4;
+    string event_type = 5;
+    string start_time = 6;
+    string end_time = 7;
+    string location = 8;
+    string created_at = 9;
+    string updated_at = 10;
+}
+
+message JoinCommunityRequest {
+    string community_id = 1;
+    string user_id = 2;
+    string joined_at = 3;
+}
+
+message JoinCommunityResponse {
+    string message = 1;
+}
+
+message CreateCommunityRequest {
+    Community community = 1;
+}
+
+message CreateCommunityResponse {
+    Community community = 1;
+}
+
+message GetCommunityRequest {
+    string id = 1;
+}
+
+message GetCommunityResponse {
+    Community community = 1;
+}
+
+message UpdateCommunityRequest {
+    Community community = 1;
+}
+
+message UpdateCommunityResponse {
+    Community community = 1;
+}
+
+message DeleteCommunityRequest {
+    string id = 1;
+}
+
+message DeleteCommunityResponse {
+    string message = 1;
+}
+
+message GetAllCommunityRequest {
+    string name = 1;
+    int32 limit = 2;
+    int32 offset = 3;
+}
+
+message GetAllCommunityResponse {
+    repeated Community communities = 1;
+}
+
+message LeaveCommunityRequest {
+    string community_id = 1;
+    string user_id = 2;
+}
+
+message LeaveCommunityResponse {
+    string message = 1;
+}
+
+// Event-related messages
+message CreateCommunityEventRequest {
+    Event event = 1;
+}
+
+message CreateCommunityEventResponse {
+    Event event = 1;
+}
+
+message GetCommunityEventRequest {
+    string id = 1;
+}
+
+message GetCommunityEventResponse {
+    Event event = 1;
+}
+
+// Forum-related messages
+message CreateForumRequest {
+    string community_id = 1;
+    string title = 2;
+    string content = 3;
+}
+
+message CreateForumResponse {
+    string id = 1;
+    string community_id = 2;
+    string title = 3;
+    string content = 4;
+    string created_at = 5;
+    string updated_at = 6;
+}
+
+message GetForumRequest {
+    string id = 1;
+}
+
+message GetForumResponse {
+    string id = 1;
+    string community_id = 2;
+    string title = 3;
+    string content = 4;
+    string created_at = 5;
+    string updated_at = 6;
+}
+
+message CreateForumCommentRequest {
+    string forum_id = 1;
+    string user_id = 2;
+    string content = 3;
+}
+
+message CreateForumCommentResponse {
+    string id = 1;
+    string forum_id = 2;
+    string user_id = 3;
+    string content = 4;
+    string created_at = 5;
+    string updated_at = 6;
+}

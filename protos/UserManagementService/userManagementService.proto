@@ -12,6 +12,7 @@ service UserManagementService {
     rpc UpdateUserProfile(UserProfileRequest) returns (UserProfileResponse) {}
     rpc GetUserProfileById(IdUserRequest) returns (UserProfileResponse) {}
     rpc UpdateUserProfileById(UserProfileRequest) returns (UserProfileResponse) {}
+    
 }
 
 // User

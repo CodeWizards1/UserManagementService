@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option go_package = "authentication/";
+
+package Authentication;
+
+service AuthenticationService {
+    rpc CreateUser (UserRequest) returns (UserResponse) {}
+    rpc Login (AutorizationRequest) returns (AutorizationResponse) {}    
+}
+
+message UserRequest {
+    string username = 1;
+    string email = 2;
+    string password = 3;
+}
+
+message UserResponse {
+    string user_id = 1;
+    string username = 2;
+    string email = 3;
+    string created_at = 4;
+    string updated_at = 5;
+}
+
+message AutorizationRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message AutorizationResponse {
+    string message = 1;
+}
