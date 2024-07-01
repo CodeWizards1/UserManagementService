@@ -20,10 +20,6 @@ message IdUserRequest {
     string user_id = 1;
 }
 
-<<<<<<< HEAD:protos/UserManagementSevice/userManagementService.proto
-
-=======
->>>>>>> 54c6f910a671ec3cc2deb169fec4b566e7e13661:protos/UserManagementService/userManagementService.proto
 message UpdateUserRequest{
     string user_id = 1;
     string username = 2;

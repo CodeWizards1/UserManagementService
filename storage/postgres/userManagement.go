@@ -90,9 +90,27 @@ func (repo *UserRepository) UpdateUser(ctx context.Context, user *pb.UpdateUserR
 	return repo.GetUserById(ctx, &pb.IdUserRequest{UserId: user.UserId})
 }
 
+func (repo *UserRepository) DeleteUser(ctx context.Context, user *pb.IdUserRequest) (*pb.DeleteUserResponse, error) {
+	query := `
+        UPDATE users SET deleted_at = NOW() 
+        WHERE user_id = $1 AND deleted_at IS NULL
+    `
+    stmt, err := repo.db.Prepare(query)
+    if err!= nil {
+        return nil, fmt.Errorf("prepare error: %v", err)
+    }
+
+    if _, err := stmt.ExecContext(ctx, user.UserId); err!= nil {
+        return nil, fmt.Errorf("exec error: %v", err)
+    }
+
+    return &pb.DeleteUserResponse{Message: "Deteted user"}, nil
+}
+
 func (repo *UserRepository) GetUserProfileById(ctx context.Context, user *pb.IdUserRequest) (*pb.UserProfileResponse, error) {
 	userProfileResponse := &pb.UserProfileResponse{}
 	userProfileResponse.UserId = user.UserId
+	userProfile := &pb.UserProfile{}
 
 	query := `
 	    SELECT user_id, 
@@ -112,18 +130,72 @@ func (repo *UserRepository) GetUserProfileById(ctx context.Context, user *pb.IdU
 	row := stmt.QueryRowContext(ctx, user.UserId)
 	if err := row.Scan(
 		&userProfileResponse.UserId,
-		&userProfileResponse.); err != nil {
+		&userProfile.FullName,
+		&userProfile.Bio,
+        &userProfile.Expertise,
+        &userProfile.Location,
+        &userProfile.AvatarUrl,
+		); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("user profile not found")
 		}
 		return nil, fmt.Errorf("scan error: %v", err)
 	}
+	userProfileResponse.UserProfile = userProfile
 
 	return userProfileResponse, nil
 
 }
 
 func (repo *UserRepository) UpdateUserProfile(ctx context.Context, user *pb.UserProfileRequest) (*pb.UserProfileResponse, error) {
-	userProfileResponse := &pb.UserProfileResponse{}
-	userProfileResponse.UserId = user.UserId
+
+	userProfile := &pb.UserProfile{}
+
+	query := `
+		UPDATE user SET updated_at = NOW() 
+	`
+	params := []string{}
+	args := []interface{}{}
+
+	if userProfile.FullName != "" {
+		params = append(params, fmt.Sprintf("username = $%d", len(args)+1))
+		args = append(args, userProfile.FullName)
+	}
+
+	if userProfile.Bio != "" {
+		params = append(params, fmt.Sprintf("email = $%d", len(args)+1))
+		args = append(args, userProfile.Bio)
+	}
+
+	if userProfile.Expertise != "" {
+		params = append(params, fmt.Sprintf("password = $%d", len(args)+1))
+		args = append(args, userProfile.Expertise)
+	}
+
+	if userProfile.Location!= "" {
+        params = append(params, fmt.Sprintf("location = $%d", len(args)+1))
+        args = append(args, userProfile.Location)
+    }
+
+	if userProfile.AvatarUrl!= "" {
+        params = append(params, fmt.Sprintf("avatar_url = $%d", len(args)+1))
+        args = append(args, userProfile.AvatarUrl)
+    }
+
+	if len(params) > 0 {
+		query += strings.Join(params, ", ")
+	}
+
+	query += " WHERE user_id = $1 AND deleted_at IS NULL"
+
+	stmt, err := repo.db.Prepare(query)
+	if err != nil {
+		return nil, fmt.Errorf("prepare error: %v", err)
+	}
+
+	if _, err := stmt.ExecContext(ctx, user.UserId, args); err != nil {
+		return nil, fmt.Errorf("exec error: %v", err)
+	}
+
+	return repo.GetUserProfileById(ctx, &pb.IdUserRequest{UserId: user.UserId})
 }

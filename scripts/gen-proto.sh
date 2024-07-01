@@ -4,8 +4,4 @@ CURRENT_DIR=$1
 rm -rf "${CURRENT_DIR}/genproto"
 find "${CURRENT_DIR}/protos" -type f -name "*.proto" -print0 | while IFS= read -r -d '' file; do
   protoc -I=${CURRENT_DIR}/protos -I=/usr/local/go --go_out=${CURRENT_DIR} --go-grpc_out=${CURRENT_DIR} "${file}"
-<<<<<<< HEAD
 done
-=======
-done
->>>>>>> 54c6f910a671ec3cc2deb169fec4b566e7e13661

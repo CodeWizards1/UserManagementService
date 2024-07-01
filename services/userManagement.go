@@ -38,13 +38,28 @@ func (u *userManagementService) UpdateUserById(ctx context.Context, in *pb.Updat
 }
 
 func (u *userManagementService) DeleteUserById(ctx context.Context, in *pb.IdUserRequest) (*pb.DeleteUserResponse, error) {
-	return nil, nil
+	res, err := u.UserRepo.DeleteUser(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
 func (u *userManagementService) GetUserProfile(ctx context.Context, in *pb.IdUserRequest) (*pb.UserProfileResponse, error) {
-	return nil, nil
+	res, err := u.UserRepo.GetUserProfileById(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
 func (u *userManagementService) UpdateUserProfile(ctx context.Context, in *pb.UserProfileRequest) (*pb.UserProfileResponse, error) {
-	return nil, nil
+	res, err := u.UserRepo.UpdateUserProfile(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
