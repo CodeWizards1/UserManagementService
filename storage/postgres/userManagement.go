@@ -6,13 +6,15 @@ import (
 	"fmt"
 	"strings"
 	pb "userManagement/genproto/UserManagementSevice/user"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type UserRepository struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
-func NewUserRepository(db *sql.DB) *UserRepository {
+func NewUserRepository(db *sqlx.DB) *UserRepository {
 	return &UserRepository{db: db}
 }
 
@@ -24,7 +26,7 @@ func (repo *UserRepository) GetUserById(ctx context.Context, user *pb.IdUserRequ
 		SELECT username,
 				email,
 				created_at,
-                updated_at,
+                updated_at
 		FROM users 
 		WHERE user_id = $1 AND deleted_at IS NULL
 	`
@@ -35,7 +37,7 @@ func (repo *UserRepository) GetUserById(ctx context.Context, user *pb.IdUserRequ
 		return nil, fmt.Errorf("prepare error: %v", err)
 	}
 
-	row := stmt.QueryRowContext(ctx, stmt, user.UserId)
+	row := stmt.QueryRowContext(ctx, user.UserId)
 	if err := row.Scan(&userResponse.Username,
 		&userResponse.Email,
 		&userResponse.CreatedAt,

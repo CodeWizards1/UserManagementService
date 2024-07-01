@@ -18,6 +18,8 @@ message IdUserRequest {
     string user_id = 1;
 }
 
+
+
 message UpdateUserRequest{
     string user_id = 1;
     string username = 2;
@@ -39,8 +41,7 @@ message UserResponse {
 
 // Profile
 
-message UserProfileRequest {
-    string user_id = 1;
+message UserProfile {
     string full_name = 2;
     string bio = 3;
     string expertise = 4;
@@ -48,11 +49,13 @@ message UserProfileRequest {
     string avatar_url = 6;
 }
 
+message UserProfileRequest {
+    string user_id = 1;
+    UserProfile user_profile = 2;
+}
+    
+
 message UserProfileResponse {
     string user_id = 1;
-    string full_name = 2;
-    string bio = 3;
-    string expertise = 4;
-    string location = 5;
-    string avatar_url = 6;
+    UserProfile user_profile = 2;
 }

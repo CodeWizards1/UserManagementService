@@ -41,7 +41,7 @@ func main() {
 		log.Fatal("Failed to connect to database: ", err)
 	}
 
-	userManaementService := services.NewUserManagementRepo(db)
+	userManaementService := services.NewuserManagementService(db)
 	pb.RegisterUserManagementServiceServer(gprcServer, userManaementService)
 
 	log.Println("gRPC server is running on port 50051")
