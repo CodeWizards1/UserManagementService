@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
-	pb "userManagement/genproto/UserManagementSevice/user"
+	pb "userManagement/genproto/UserManagementService"
 
 	"github.com/jmoiron/sqlx"
 )

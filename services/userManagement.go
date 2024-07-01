@@ -2,7 +2,7 @@ package services
 
 import (
 	"context"
-	pb "userManagement/genproto/UserManagementSevice/user"
+	pb "userManagement/genproto/UserManagementService"
 	"userManagement/storage/postgres"
 
 	"github.com/jmoiron/sqlx"

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "user/";
+option go_package = "genproto/UserManagementService";
 
 package User;
 
@@ -17,8 +17,6 @@ service UserManagementService {
 message IdUserRequest {
     string user_id = 1;
 }
-
-
 
 message UpdateUserRequest{
     string user_id = 1;
@@ -53,7 +51,6 @@ message UserProfileRequest {
     string user_id = 1;
     UserProfile user_profile = 2;
 }
-    
 
 message UserProfileResponse {
     string user_id = 1;
