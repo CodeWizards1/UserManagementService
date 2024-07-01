@@ -48,6 +48,7 @@ func (repo *UserRepository) GetUserById(ctx context.Context, user *pb.IdUserRequ
 	return userResponse, nil
 }
 
+func (repo *UserRepository) GetAllUsers(ctx context.Context, user *pb.IdUserRequest) (*pb)
 func (repo *UserRepository) UpdateUser(ctx context.Context, user *pb.UpdateUserRequest) (*pb.UserResponse, error) {
 	query := `
 		UPDATE user SET updated_at = NOW() 

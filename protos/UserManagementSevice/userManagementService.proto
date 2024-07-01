@@ -18,6 +18,8 @@ message IdUserRequest {
     string user_id = 1;
 }
 
+message 
+
 message UpdateUserRequest{
     string user_id = 1;
     string username = 2;
@@ -47,6 +49,8 @@ message UserProfileRequest {
     string location = 5;
     string avatar_url = 6;
 }
+
+message UserP
 
 message UserProfileResponse {
     string user_id = 1;
