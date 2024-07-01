@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 	"userManagement/config"
-	pb "userManagement/genproto/UserManagementSevice/user"
+	pb "userManagement/genproto/UserManagementSevice/User"
 	"userManagement/services"
 
 	"github.com/jmoiron/sqlx"
@@ -41,7 +41,7 @@ func main() {
 		log.Fatal("Failed to connect to database: ", err)
 	}
 
-	userManaementService := services.NewUserManagementRepo(db)
+	userManaementService := services.NewuserManagementService(db)
 	pb.RegisterUserManagementServiceServer(gprcServer, userManaementService)
 
 	log.Println("gRPC server is running on port 50051")
