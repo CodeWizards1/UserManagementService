@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
-	pb "userManagement/genproto/UserManagementSevice/user"
+	pb "userManagement/genproto/UserManagementService"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -112,10 +112,7 @@ func (repo *UserRepository) GetUserProfileById(ctx context.Context, user *pb.IdU
 	row := stmt.QueryRowContext(ctx, user.UserId)
 	if err := row.Scan(
 		&userProfileResponse.UserId,
-		&userProfileResponse.FullName,
-		&userProfileResponse.Bio,
-		&userProfileResponse.Expertise,
-		&userProfileResponse.Location); err != nil {
+		&userProfileResponse.); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("user profile not found")
 		}

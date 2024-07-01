@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 	"userManagement/config"
-	pb "userManagement/genproto/UserManagementSevice/User"
+	pb "userManagement/genproto/UserManagementService"
 	"userManagement/services"
 
 	"github.com/jmoiron/sqlx"
