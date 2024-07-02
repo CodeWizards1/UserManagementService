@@ -21,10 +21,11 @@ func (repo *UserRepository) GetUserById(ctx context.Context, user *pb.IdUserRequ
 	userResponse.UserId = user.UserId
 
 	query := `
-		SELECT username,
-				email,
-				created_at,
-                updated_at,
+		SELECT 
+			username,
+			email,
+			created_at,
+            updated_at
 		FROM users 
 		WHERE user_id = $1 AND deleted_at IS NULL
 	`
