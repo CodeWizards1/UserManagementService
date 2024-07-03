@@ -29,11 +29,10 @@ func GetDB(path string) (*sqlx.DB, error) {
 }
 
 func main() {
-	lis, err := net.Listen("tcp", "localhost:50051")
+	lis, err := net.Listen("tcp", "localhost:50060")
 	if err != nil {
 		log.Fatal("Failed to listen: ", err)
 	}
-
 	gprcServer := grpc.NewServer()
 
 	db, err := GetDB(".")
@@ -44,7 +43,7 @@ func main() {
 	userManaementService := services.NewuserManagementService(db)
 	pb.RegisterUserManagementServiceServer(gprcServer, userManaementService)
 
-	log.Println("gRPC server is running on port 50051")
+	log.Println("gRPC server is running on port 50050")
 	if err := gprcServer.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}

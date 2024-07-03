@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	pb "userManagement/genproto/UserManagementService"
 	"userManagement/storage/postgres"
 
@@ -46,12 +47,14 @@ func (u *userManagementService) DeleteUserById(ctx context.Context, in *pb.IdUse
 	return res, nil
 }
 
-func (u *userManagementService) GetUserProfile(ctx context.Context, in *pb.IdUserRequest) (*pb.UserProfileResponse, error) {
+func (u *userManagementService) GetUserProfileById(ctx context.Context, in *pb.IdUserRequest) (*pb.UserProfileResponse, error) {
+
 	res, err := u.UserRepo.GetUserProfileById(ctx, in)
 	if err != nil {
 		return nil, err
 	}
 
+	fmt.Println(res)
 	return res, nil
 }
 
