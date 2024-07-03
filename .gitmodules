@@ -1,3 +1,3 @@
 [submodule "protos"]
 	path = protos
-	url = git@github.com:CodeWizards1/protos
+	url = https://github.com/CodeWizards1/protos.git
