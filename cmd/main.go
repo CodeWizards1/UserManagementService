@@ -29,7 +29,7 @@ func GetDB(path string) (*sqlx.DB, error) {
 }
 
 func main() {
-	lis, err := net.Listen("tcp", "localhost:50060")
+	lis, err := net.Listen("tcp", "localhost:50052")
 	if err != nil {
 		log.Fatal("Failed to listen: ", err)
 	}

@@ -46,20 +46,22 @@ func (u *userManagementService) DeleteUserById(ctx context.Context, in *pb.IdUse
 
 	return res, nil
 }
-
 func (u *userManagementService) GetUserProfileById(ctx context.Context, in *pb.IdUserRequest) (*pb.UserProfileResponse, error) {
+	fmt.Printf("Received request for user ID: %s\n", in.UserId)
 
 	res, err := u.UserRepo.GetUserProfileById(ctx, in)
 	if err != nil {
+		fmt.Printf("Error fetching user profile: %v\n", err)
 		return nil, err
 	}
 
-	fmt.Println(res)
+	fmt.Printf("Fetched user profile: %v\n", res)
 	return res, nil
 }
 
-func (u *userManagementService) UpdateUserProfile(ctx context.Context, in *pb.UserProfileRequest) (*pb.UserProfileResponse, error) {
-	res, err := u.UserRepo.UpdateUserProfile(ctx, in)
+func (u *userManagementService) UpdateUserProfileById(ctx context.Context, in *pb.UserProfile) (*pb.UserProfileResponse, error) {
+	
+	res, err := u.UserRepo.UpdateUserProfileById(ctx, in)
 	if err != nil {
 		return nil, err
 	}

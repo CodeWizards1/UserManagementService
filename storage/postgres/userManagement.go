@@ -56,7 +56,6 @@ func (repo *UserRepository) UpdateUser(ctx context.Context, user *pb.UpdateUserR
 	)
 
 	query := `UPDATE users SET updated_at = NOW()`
-	fil := " WHERE user_id = $4"
 
 	if len(user.Username) > 0 {
 		params["username"] = user.Username
@@ -75,7 +74,7 @@ func (repo *UserRepository) UpdateUser(ctx context.Context, user *pb.UpdateUserR
 
 	query, arr = ReplaceQueryParamsUser(query, params)
 	arr = append(arr, user.UserId) // userId ni qo'shish
-	fil = fmt.Sprintf("WHERE user_id = $%d", len(arr))
+	fil := fmt.Sprintf("WHERE user_id = $%d and deleted_at is NULL", len(arr))
 	query += fil
 
 	_, err := repo.db.ExecContext(ctx, query, arr...)
@@ -120,90 +119,20 @@ func (repo *UserRepository) DeleteUser(ctx context.Context, user *pb.IdUserReque
 	return &pb.DeleteUserResponse{Message: "Deteted user"}, nil
 }
 
-// userResponse := &pb.UserResponse{}
-// 	userResponse.UserId = user.UserId
-
-// 	query := `
-// 		SELECT username,
-// 				email,
-// 				created_at,
-// 				updated_at
-// 		FROM users
-// 		WHERE user_id = $1 AND deleted_at IS NULL
-// 	`
-// 	row := repo.db.DB.QueryRow(query, user.UserId)
-
-// 	fmt.Println("user id: ", user.UserId)
-// 	if err := row.Scan(
-// 		&userResponse.Username,
-// 		&userResponse.Email,
-// 		&userResponse.CreatedAt,
-// 		&userResponse.UpdatedAt); err != nil {
-// 		if err == sql.ErrNoRows {
-// 			return nil, fmt.Errorf("user not found")
-// 		}
-// 		return nil, fmt.Errorf("scan error: %v", err)
-// 	}
-
-// 	return userResponse, nil
-
-// func (repo *UserRepository) GetUserProfileById(ctx context.Context, user *pb.IdUserRequest) (*pb.UserProfileResponse, error) {
-// 	userProfileResponse := &pb.UserProfileResponse{}
-// 	userProfileResponse.UserId = user.UserId
-
-// 	fmt.Println("user id: ", userProfileResponse.UserId)
-// 	query := `
-// 	    SELECT user_id,
-// 			full_name,
-// 			bio,
-// 			user_expertise,
-// 			location,
-// 			avatar_url
-// 		FROM user_profiles
-// 		where user_id = $1
-// 		`
-// 	// stmt, err := repo.db.Prepare(query)
-// 	// if err != nil {
-// 	// 	return nil, fmt.Errorf("prepare error: %v", err)
-// 	// }
-
-// 	// row := stmt.QueryRowContext(ctx, user.UserId)
-
-// 	fmt.Println("user id : ", user.UserId)
-// 	row := repo.db.DB.QueryRow(query, user.UserId)
-// 	if err := row.Scan(
-// 		&userProfileResponse.UserId,
-// 		&userProfileResponse.FullName,
-// 		&userProfileResponse.Bio,
-// 		&userProfileResponse.Expertise,
-// 		&userProfileResponse.Location,
-// 		&userProfileResponse.AvatarUrl); err != nil {
-
-// 		fmt.Println("user profile: ", userProfileResponse)
-// 		if err == sql.ErrNoRows {
-// 			return nil, fmt.Errorf("user profile not found")
-// 		}
-// 		return nil, fmt.Errorf("scan error: %v", err)
-// 	}
-// 	// userProfileResponse.UserProfile = userProfile
-
-// 	return userProfileResponse, nil
-
-// }
 func (repo *UserRepository) GetUserProfileById(ctx context.Context, user *pb.IdUserRequest) (*pb.UserProfileResponse, error) {
 	userProfileResponse := &pb.UserProfileResponse{}
 	userProfileResponse.UserId = user.UserId
 
 	query := `
-	SELECT user_id, 
-	full_name, 
-	bio, 
-	expertise, 
-	location, 
-	avatar_url 
-	FROM user_profiles
-	WHERE user_id = $1
-	`
+    SELECT user_id, 
+    full_name, 
+    bio, 
+    expertise, 
+    location, 
+    avatar_url 
+    FROM user_profiles
+    WHERE user_id = $1
+    `
 
 	fmt.Println("user id: ", userProfileResponse.UserId)
 
@@ -211,6 +140,7 @@ func (repo *UserRepository) GetUserProfileById(ctx context.Context, user *pb.IdU
 	if err != nil {
 		return nil, fmt.Errorf("prepare error: %v", err)
 	}
+	defer stmt.Close() // Ensure the statement is closed after use
 
 	row := stmt.QueryRowContext(ctx, user.UserId)
 	if err := row.Scan(
@@ -228,59 +158,48 @@ func (repo *UserRepository) GetUserProfileById(ctx context.Context, user *pb.IdU
 		}
 		return nil, fmt.Errorf("scan error: %v", err)
 	}
+
 	fmt.Println("user profile: ", userProfileResponse)
 
 	return userProfileResponse, nil
 }
 
-func (repo *UserRepository) UpdateUserProfile(ctx context.Context, user *pb.UserProfileRequest) (*pb.UserProfileResponse, error) {
+func (repo *UserRepository) UpdateUserProfileById(ctx context.Context, user *pb.UserProfile) (*pb.UserProfileResponse, error) {
 
-	userProfileResponse := &pb.UserProfileResponse{}
+	var (
+		params = make(map[string]interface{})
+		arr    []interface{}
+	)
 
-	query := `
-		UPDATE user SET updated_at = NOW() 
-	`
-	params := []string{}
-	args := []interface{}{}
+	query := `UPDATE user_profiles SET updated_at = NOW()`
 
-	if userProfileResponse.FullName != "" {
-		params = append(params, fmt.Sprintf("username = $%d", len(args)+1))
-		args = append(args, userProfileResponse.FullName)
+	if len(user.FullName) > 0 {
+		params["full_Name"] = user.FullName
+		query += ", full_Name = :full_Name"
 	}
 
-	if userProfileResponse.Bio != "" {
-		params = append(params, fmt.Sprintf("email = $%d", len(args)+1))
-		args = append(args, userProfileResponse.Bio)
+	if len(user.Bio) > 0 {
+		params["bio"] = user.Bio
+		query += ", bio = :bio"
 	}
 
-	if userProfileResponse.Expertise != "" {
-		params = append(params, fmt.Sprintf("password = $%d", len(args)+1))
-		args = append(args, userProfileResponse.Expertise)
+	if len(user.Expertise) > 0 {
+		params["expertise"] = user.Expertise
+		query += ", expertise = :expertise"
 	}
 
-	if userProfileResponse.Location != "" {
-		params = append(params, fmt.Sprintf("location = $%d", len(args)+1))
-		args = append(args, userProfileResponse.Location)
-	}
+	query, arr = ReplaceQueryParamsUser(query, params)
+	arr = append(arr, user.UserId) // userId ni qo'shish
+	fil := fmt.Sprintf("WHERE user_id = $%d and deleted_at is NULL", len(arr))
+	fmt.Println(query)
+	fmt.Println(fil)
+	fmt.Println(user.UserId)
+	fmt.Println(arr)
+	query += fil
 
-	if userProfileResponse.AvatarUrl != "" {
-		params = append(params, fmt.Sprintf("avatar_url = $%d", len(args)+1))
-		args = append(args, userProfileResponse.AvatarUrl)
-	}
-
-	if len(params) > 0 {
-		query += strings.Join(params, ", ")
-	}
-
-	query += " WHERE user_id = $1 AND deleted_at IS NULL"
-
-	stmt, err := repo.db.Prepare(query)
+	_, err := repo.db.ExecContext(ctx, query, arr...)
 	if err != nil {
-		return nil, fmt.Errorf("prepare error: %v", err)
-	}
-
-	if _, err := stmt.ExecContext(ctx, user.UserId, args); err != nil {
-		return nil, fmt.Errorf("exec error: %v", err)
+		return nil, err
 	}
 
 	return repo.GetUserProfileById(ctx, &pb.IdUserRequest{UserId: user.UserId})
