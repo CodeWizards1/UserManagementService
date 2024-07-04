@@ -1,1 +1,0 @@
-{"buildTargets":["make","migrate_down","migrate_file","migrate_force","migrate_up","proto-gen","run"],"launchTargets":[],"customConfigurationProvider":{"workspaceBrowse":{"browsePath":[],"compilerArgs":[]},"fileIndex":[]}}
