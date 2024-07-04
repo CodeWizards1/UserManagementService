@@ -26,8 +26,8 @@ type ServerConfig struct {
 
 func Load(path string) Config {
 	viper.SetConfigFile(".env")
-
-	viper.AddConfigPath(path)
+	
+	viper.AddConfigPath("../")
 
 	err := viper.ReadInConfig()
 	if err != nil {
