@@ -19,6 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
+	GardenManagementService_DoesGardenExist_FullMethodName        = "/GardenManagementService.GardenManagementService/DoesGardenExist"
 	GardenManagementService_CreateGarden_FullMethodName           = "/GardenManagementService.GardenManagementService/CreateGarden"
 	GardenManagementService_GetGardenByID_FullMethodName          = "/GardenManagementService.GardenManagementService/GetGardenByID"
 	GardenManagementService_UpdateGardenByID_FullMethodName       = "/GardenManagementService.GardenManagementService/UpdateGardenByID"
@@ -36,6 +37,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GardenManagementServiceClient interface {
+	DoesGardenExist(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*DoesGardenExistResponse, error)
 	// 1
 	CreateGarden(ctx context.Context, in *GardenRequest, opts ...grpc.CallOption) (*GardenResponse, error)
 	// 2
@@ -66,6 +68,16 @@ type gardenManagementServiceClient struct {
 
 func NewGardenManagementServiceClient(cc grpc.ClientConnInterface) GardenManagementServiceClient {
 	return &gardenManagementServiceClient{cc}
+}
+
+func (c *gardenManagementServiceClient) DoesGardenExist(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*DoesGardenExistResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DoesGardenExistResponse)
+	err := c.cc.Invoke(ctx, GardenManagementService_DoesGardenExist_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *gardenManagementServiceClient) CreateGarden(ctx context.Context, in *GardenRequest, opts ...grpc.CallOption) (*GardenResponse, error) {
@@ -182,6 +194,7 @@ func (c *gardenManagementServiceClient) GetCareLogsByPlantID(ctx context.Context
 // All implementations must embed UnimplementedGardenManagementServiceServer
 // for forward compatibility
 type GardenManagementServiceServer interface {
+	DoesGardenExist(context.Context, *IdRequest) (*DoesGardenExistResponse, error)
 	// 1
 	CreateGarden(context.Context, *GardenRequest) (*GardenResponse, error)
 	// 2
@@ -211,6 +224,9 @@ type GardenManagementServiceServer interface {
 type UnimplementedGardenManagementServiceServer struct {
 }
 
+func (UnimplementedGardenManagementServiceServer) DoesGardenExist(context.Context, *IdRequest) (*DoesGardenExistResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DoesGardenExist not implemented")
+}
 func (UnimplementedGardenManagementServiceServer) CreateGarden(context.Context, *GardenRequest) (*GardenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGarden not implemented")
 }
@@ -256,6 +272,24 @@ type UnsafeGardenManagementServiceServer interface {
 
 func RegisterGardenManagementServiceServer(s grpc.ServiceRegistrar, srv GardenManagementServiceServer) {
 	s.RegisterService(&GardenManagementService_ServiceDesc, srv)
+}
+
+func _GardenManagementService_DoesGardenExist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GardenManagementServiceServer).DoesGardenExist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GardenManagementService_DoesGardenExist_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GardenManagementServiceServer).DoesGardenExist(ctx, req.(*IdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _GardenManagementService_CreateGarden_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -463,6 +497,10 @@ var GardenManagementService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "GardenManagementService.GardenManagementService",
 	HandlerType: (*GardenManagementServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "DoesGardenExist",
+			Handler:    _GardenManagementService_DoesGardenExist_Handler,
+		},
 		{
 			MethodName: "CreateGarden",
 			Handler:    _GardenManagementService_CreateGarden_Handler,

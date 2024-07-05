@@ -19,6 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
+	UserManagementService_DoesUserExists_FullMethodName        = "/User.UserManagementService/DoesUserExists"
+	UserManagementService_CreateUser_FullMethodName            = "/User.UserManagementService/CreateUser"
+	UserManagementService_Login_FullMethodName                 = "/User.UserManagementService/Login"
 	UserManagementService_GetUserById_FullMethodName           = "/User.UserManagementService/GetUserById"
 	UserManagementService_UpdateUserById_FullMethodName        = "/User.UserManagementService/UpdateUserById"
 	UserManagementService_DeleteUserById_FullMethodName        = "/User.UserManagementService/DeleteUserById"
@@ -30,11 +33,14 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserManagementServiceClient interface {
+	DoesUserExists(ctx context.Context, in *IdUserRequest, opts ...grpc.CallOption) (*DoesUserExistsResponse, error)
+	CreateUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	Login(ctx context.Context, in *AutorizationRequest, opts ...grpc.CallOption) (*AutorizationResponse, error)
 	GetUserById(ctx context.Context, in *IdUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	UpdateUserById(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	DeleteUserById(ctx context.Context, in *IdUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
 	GetUserProfileById(ctx context.Context, in *IdUserRequest, opts ...grpc.CallOption) (*UserProfileResponse, error)
-	UpdateUserProfileById(ctx context.Context, in *UserProfile, opts ...grpc.CallOption) (*UserProfileResponse, error)
+	UpdateUserProfileById(ctx context.Context, in *UpdateUserProfileRequest, opts ...grpc.CallOption) (*UserProfileResponse, error)
 }
 
 type userManagementServiceClient struct {
@@ -43,6 +49,36 @@ type userManagementServiceClient struct {
 
 func NewUserManagementServiceClient(cc grpc.ClientConnInterface) UserManagementServiceClient {
 	return &userManagementServiceClient{cc}
+}
+
+func (c *userManagementServiceClient) DoesUserExists(ctx context.Context, in *IdUserRequest, opts ...grpc.CallOption) (*DoesUserExistsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DoesUserExistsResponse)
+	err := c.cc.Invoke(ctx, UserManagementService_DoesUserExists_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userManagementServiceClient) CreateUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserResponse)
+	err := c.cc.Invoke(ctx, UserManagementService_CreateUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userManagementServiceClient) Login(ctx context.Context, in *AutorizationRequest, opts ...grpc.CallOption) (*AutorizationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AutorizationResponse)
+	err := c.cc.Invoke(ctx, UserManagementService_Login_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *userManagementServiceClient) GetUserById(ctx context.Context, in *IdUserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
@@ -85,7 +121,7 @@ func (c *userManagementServiceClient) GetUserProfileById(ctx context.Context, in
 	return out, nil
 }
 
-func (c *userManagementServiceClient) UpdateUserProfileById(ctx context.Context, in *UserProfile, opts ...grpc.CallOption) (*UserProfileResponse, error) {
+func (c *userManagementServiceClient) UpdateUserProfileById(ctx context.Context, in *UpdateUserProfileRequest, opts ...grpc.CallOption) (*UserProfileResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UserProfileResponse)
 	err := c.cc.Invoke(ctx, UserManagementService_UpdateUserProfileById_FullMethodName, in, out, cOpts...)
@@ -99,11 +135,14 @@ func (c *userManagementServiceClient) UpdateUserProfileById(ctx context.Context,
 // All implementations must embed UnimplementedUserManagementServiceServer
 // for forward compatibility
 type UserManagementServiceServer interface {
+	DoesUserExists(context.Context, *IdUserRequest) (*DoesUserExistsResponse, error)
+	CreateUser(context.Context, *UserRequest) (*UserResponse, error)
+	Login(context.Context, *AutorizationRequest) (*AutorizationResponse, error)
 	GetUserById(context.Context, *IdUserRequest) (*UserResponse, error)
 	UpdateUserById(context.Context, *UpdateUserRequest) (*UserResponse, error)
 	DeleteUserById(context.Context, *IdUserRequest) (*DeleteUserResponse, error)
 	GetUserProfileById(context.Context, *IdUserRequest) (*UserProfileResponse, error)
-	UpdateUserProfileById(context.Context, *UserProfile) (*UserProfileResponse, error)
+	UpdateUserProfileById(context.Context, *UpdateUserProfileRequest) (*UserProfileResponse, error)
 	mustEmbedUnimplementedUserManagementServiceServer()
 }
 
@@ -111,6 +150,15 @@ type UserManagementServiceServer interface {
 type UnimplementedUserManagementServiceServer struct {
 }
 
+func (UnimplementedUserManagementServiceServer) DoesUserExists(context.Context, *IdUserRequest) (*DoesUserExistsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DoesUserExists not implemented")
+}
+func (UnimplementedUserManagementServiceServer) CreateUser(context.Context, *UserRequest) (*UserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+}
+func (UnimplementedUserManagementServiceServer) Login(context.Context, *AutorizationRequest) (*AutorizationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
 func (UnimplementedUserManagementServiceServer) GetUserById(context.Context, *IdUserRequest) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserById not implemented")
 }
@@ -123,7 +171,7 @@ func (UnimplementedUserManagementServiceServer) DeleteUserById(context.Context, 
 func (UnimplementedUserManagementServiceServer) GetUserProfileById(context.Context, *IdUserRequest) (*UserProfileResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserProfileById not implemented")
 }
-func (UnimplementedUserManagementServiceServer) UpdateUserProfileById(context.Context, *UserProfile) (*UserProfileResponse, error) {
+func (UnimplementedUserManagementServiceServer) UpdateUserProfileById(context.Context, *UpdateUserProfileRequest) (*UserProfileResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserProfileById not implemented")
 }
 func (UnimplementedUserManagementServiceServer) mustEmbedUnimplementedUserManagementServiceServer() {}
@@ -137,6 +185,60 @@ type UnsafeUserManagementServiceServer interface {
 
 func RegisterUserManagementServiceServer(s grpc.ServiceRegistrar, srv UserManagementServiceServer) {
 	s.RegisterService(&UserManagementService_ServiceDesc, srv)
+}
+
+func _UserManagementService_DoesUserExists_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserManagementServiceServer).DoesUserExists(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserManagementService_DoesUserExists_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserManagementServiceServer).DoesUserExists(ctx, req.(*IdUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserManagementService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserManagementServiceServer).CreateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserManagementService_CreateUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserManagementServiceServer).CreateUser(ctx, req.(*UserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserManagementService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AutorizationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserManagementServiceServer).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserManagementService_Login_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserManagementServiceServer).Login(ctx, req.(*AutorizationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _UserManagementService_GetUserById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -212,7 +314,7 @@ func _UserManagementService_GetUserProfileById_Handler(srv interface{}, ctx cont
 }
 
 func _UserManagementService_UpdateUserProfileById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserProfile)
+	in := new(UpdateUserProfileRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -224,7 +326,7 @@ func _UserManagementService_UpdateUserProfileById_Handler(srv interface{}, ctx c
 		FullMethod: UserManagementService_UpdateUserProfileById_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserManagementServiceServer).UpdateUserProfileById(ctx, req.(*UserProfile))
+		return srv.(UserManagementServiceServer).UpdateUserProfileById(ctx, req.(*UpdateUserProfileRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -236,6 +338,18 @@ var UserManagementService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "User.UserManagementService",
 	HandlerType: (*UserManagementServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "DoesUserExists",
+			Handler:    _UserManagementService_DoesUserExists_Handler,
+		},
+		{
+			MethodName: "CreateUser",
+			Handler:    _UserManagementService_CreateUser_Handler,
+		},
+		{
+			MethodName: "Login",
+			Handler:    _UserManagementService_Login_Handler,
+		},
 		{
 			MethodName: "GetUserById",
 			Handler:    _UserManagementService_GetUserById_Handler,

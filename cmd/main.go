@@ -43,7 +43,7 @@ func main() {
 	userManaementService := services.NewuserManagementService(db)
 	pb.RegisterUserManagementServiceServer(gprcServer, userManaementService)
 
-	log.Println("gRPC server is running on port 50050")
+	log.Println("gRPC server is running on port 50052")
 	if err := gprcServer.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}

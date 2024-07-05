@@ -4,11 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
+	"time"
 	pb "userManagement/genproto/UserManagementService"
 
 	"github.com/jmoiron/sqlx"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserRepository struct {
@@ -17,6 +20,97 @@ type UserRepository struct {
 
 func NewUserRepository(db *sqlx.DB) *UserRepository {
 	return &UserRepository{db: db}
+}
+
+func hashPassword(password string) (string, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(hashedPassword), nil
+}
+
+func checkPassword(hashedPassword, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	return err == nil
+}
+
+func (repo *UserRepository) CreateUser(ctx context.Context, in *pb.UserRequest) (*pb.UserResponse, error) {
+	query := `
+		INSERT INTO users 
+			(username, email, password) 
+		VALUES 
+			($1, $2, $3)
+		RETURNING 
+			user_id, 
+			username, 
+			email,
+			created_at,
+			updated_at
+	`
+	var (
+		UserResponse pb.UserResponse
+		created_at   time.Time
+		updated_at   time.Time
+	)
+
+	hashedPassword, err := hashPassword(in.Password)
+	if err != nil {
+		log.Println("postgres/user Error while hashing password", err)
+		return nil, err
+	}
+
+	row := repo.db.QueryRowxContext(ctx, query, in.Username, in.Email, hashedPassword)
+	err = row.Scan(&UserResponse.UserId, &UserResponse.Username, &UserResponse.Email, &created_at, &updated_at)
+	if err != nil {
+		log.Println("postgres/user Error while scanning UserResponse", err)
+		return nil, err
+	}
+	UserResponse.CreatedAt = created_at.Format("2006-01-02 15:04:05")
+	UserResponse.UpdatedAt = updated_at.Format("2006-01-02 15:04:05")
+
+	query = `
+		INSERT INTO user_profiles 
+			(user_id)
+		VALUES
+			($1)
+	`
+
+	_, err = repo.db.ExecContext(ctx, query, UserResponse.UserId)
+	if err != nil {
+		log.Println("postgres/user Error while creating user_profiles", err)
+		return nil, err
+	}
+
+	return &UserResponse, nil
+}
+
+func (repo *UserRepository) Login(ctx context.Context, in *pb.AutorizationRequest) (*pb.AutorizationResponse, error) {
+	query := `
+		SELECT
+			email,
+			password
+		FROM users
+		WHERE
+			email = $1 
+	`
+	var (
+		email    string
+		password string
+	)
+
+	row := repo.db.QueryRowxContext(ctx, query, in.Email)
+	err := row.Scan(&email, &password)
+	if err != nil {
+		log.Println("postgres/user", err)
+		return nil, err
+	}
+
+	if !checkPassword(password, in.Password) {
+		return &pb.AutorizationResponse{Message: "Password is incorrect!"}, nil
+	}
+
+	return &pb.AutorizationResponse{Message: "Login successful"}, nil
 }
 
 func (repo *UserRepository) GetUserById(ctx context.Context, user *pb.IdUserRequest) (*pb.UserResponse, error) {
@@ -164,7 +258,7 @@ func (repo *UserRepository) GetUserProfileById(ctx context.Context, user *pb.IdU
 	return userProfileResponse, nil
 }
 
-func (repo *UserRepository) UpdateUserProfileById(ctx context.Context, user *pb.UserProfile) (*pb.UserProfileResponse, error) {
+func (repo *UserRepository) UpdateUserProfileById(ctx context.Context, user *pb.UpdateUserProfileRequest) (*pb.UserProfileResponse, error) {
 
 	var (
 		params = make(map[string]interface{})

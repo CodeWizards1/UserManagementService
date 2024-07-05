@@ -34,14 +34,23 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CommunityServiceClient interface {
+	// 1
 	CreateCommunity(ctx context.Context, in *CreateCommunityRequest, opts ...grpc.CallOption) (*CreateCommunityResponse, error)
+	// 2
 	GetCommunityBy(ctx context.Context, in *GetCommunityRequest, opts ...grpc.CallOption) (*GetCommunityResponse, error)
+	// 3
 	UpdateCommunity(ctx context.Context, in *UpdateCommunityRequest, opts ...grpc.CallOption) (*UpdateCommunityResponse, error)
+	// 4
 	DeleteCommunity(ctx context.Context, in *DeleteCommunityRequest, opts ...grpc.CallOption) (*DeleteCommunityResponse, error)
+	// 5
 	GetAllCommunity(ctx context.Context, in *GetAllCommunityRequest, opts ...grpc.CallOption) (*GetAllCommunityResponse, error)
+	// 6
 	JoinCommunity(ctx context.Context, in *JoinCommunityRequest, opts ...grpc.CallOption) (*JoinCommunityResponse, error)
+	// 7
 	LeaveCommunity(ctx context.Context, in *LeaveCommunityRequest, opts ...grpc.CallOption) (*LeaveCommunityResponse, error)
+	// 8
 	CreateCommunityEvent(ctx context.Context, in *CreateCommunityEventRequest, opts ...grpc.CallOption) (*CreateCommunityEventResponse, error)
+	// 9
 	GetCommunityEvent(ctx context.Context, in *GetCommunityEventRequest, opts ...grpc.CallOption) (*GetCommunityEventResponse, error)
 }
 
@@ -147,14 +156,23 @@ func (c *communityServiceClient) GetCommunityEvent(ctx context.Context, in *GetC
 // All implementations must embed UnimplementedCommunityServiceServer
 // for forward compatibility
 type CommunityServiceServer interface {
+	// 1
 	CreateCommunity(context.Context, *CreateCommunityRequest) (*CreateCommunityResponse, error)
+	// 2
 	GetCommunityBy(context.Context, *GetCommunityRequest) (*GetCommunityResponse, error)
+	// 3
 	UpdateCommunity(context.Context, *UpdateCommunityRequest) (*UpdateCommunityResponse, error)
+	// 4
 	DeleteCommunity(context.Context, *DeleteCommunityRequest) (*DeleteCommunityResponse, error)
+	// 5
 	GetAllCommunity(context.Context, *GetAllCommunityRequest) (*GetAllCommunityResponse, error)
+	// 6
 	JoinCommunity(context.Context, *JoinCommunityRequest) (*JoinCommunityResponse, error)
+	// 7
 	LeaveCommunity(context.Context, *LeaveCommunityRequest) (*LeaveCommunityResponse, error)
+	// 8
 	CreateCommunityEvent(context.Context, *CreateCommunityEventRequest) (*CreateCommunityEventResponse, error)
+	// 9
 	GetCommunityEvent(context.Context, *GetCommunityEventRequest) (*GetCommunityEventResponse, error)
 	mustEmbedUnimplementedCommunityServiceServer()
 }

@@ -18,8 +18,27 @@ func NewuserManagementService(db *sqlx.DB) *userManagementService {
 	return &userManagementService{UserRepo: postgres.NewUserRepository(db)}
 }
 
-func (u *userManagementService) GetUserById(ctx context.Context, in *pb.IdUserRequest) (*pb.UserResponse, error) {
+func (u *userManagementService) CreateUser(ctx context.Context, in *pb.UserRequest) (*pb.UserResponse, error) {
+	res, err := u.UserRepo.CreateUser(ctx, in)
+	if err != nil {
+		fmt.Println("Error creating user in service: ", err)
+		return nil, err
+	}
 
+	return res, nil
+}
+
+func (u *userManagementService) Login(ctx context.Context, in *pb.AutorizationRequest) (*pb.AutorizationResponse, error) {
+	res, err := u.UserRepo.Login(ctx, in)
+	if err != nil {
+		fmt.Println("Error logging in user in service: ", err)
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (u *userManagementService) GetUserById(ctx context.Context, in *pb.IdUserRequest) (*pb.UserResponse, error) {
 	res, err := u.UserRepo.GetUserById(ctx, in)
 	if err != nil {
 		fmt.Println("Error getting user in service: ", err)
@@ -32,7 +51,6 @@ func (u *userManagementService) GetUserById(ctx context.Context, in *pb.IdUserRe
 }
 
 func (u *userManagementService) UpdateUserById(ctx context.Context, in *pb.UpdateUserRequest) (*pb.UserResponse, error) {
-
 	res, err := u.UserRepo.UpdateUser(ctx, in)
 	if err != nil {
 		fmt.Println("Error updating user in service: ", err)
@@ -51,6 +69,7 @@ func (u *userManagementService) DeleteUserById(ctx context.Context, in *pb.IdUse
 
 	return res, nil
 }
+
 func (u *userManagementService) GetUserProfileById(ctx context.Context, in *pb.IdUserRequest) (*pb.UserProfileResponse, error) {
 	fmt.Printf("Received request for user ID: %s\n", in.UserId)
 
@@ -64,8 +83,7 @@ func (u *userManagementService) GetUserProfileById(ctx context.Context, in *pb.I
 	return res, nil
 }
 
-func (u *userManagementService) UpdateUserProfileById(ctx context.Context, in *pb.UserProfile) (*pb.UserProfileResponse, error) {
-
+func (u *userManagementService) UpdateUserProfileById(ctx context.Context, in *pb.UpdateUserProfileRequest) (*pb.UserProfileResponse, error) {
 	res, err := u.UserRepo.UpdateUserProfileById(ctx, in)
 	if err != nil {
 		fmt.Printf("Error getting user profile in service: %v\n", err)
