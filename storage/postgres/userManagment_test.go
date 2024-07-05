@@ -121,26 +121,64 @@ func TestDeleteUserById(t *testing.T) {
     }
 }
 
-// func TestGetUserProfileById(t *testing.T) {
-// 	repo := ConnectDB()
-// 	test := pb.IdUserRequest{
-// 		UserId: "2a8c33b9-f3c0-4551-88e4-30e3957b331c",
-// 	}
+func TestGetUserProfileById(t *testing.T) {
+	repo := ConnectDB()
+	test := pb.IdUserRequest{
+		UserId: "fe1bedf7-84ba-4aa0-8b3a-f8e1d53e7c13",
+	}
 
-// 	ctx := context.Background()
-// 	resp, err := repo.GetUserProfileById(ctx, &test)
-// 	if err!= nil {
-//         t.Fatalf("Error getting user profile: %v", err)
-//     }
+	ctx := context.Background()
+	resp, err := repo.GetUserProfileById(ctx, &test)
+	if err!= nil {
+        t.Fatalf("Error getting user profile: %v", err)
+	
+    }
 
-// 	Wait := pb.UserProfileResponse{
-// 		FullName: "Javohir Abdusamatov",
-// 		Bio: "bio for Abbos",
-// 		Expertise: "beginner",
-// 		Location: "nyu york",
-//         AvatarUrl: "https://example.com/jack.jpg",
-// 	}
+	Wait := pb.UserProfileResponse{
+		UserId: "fe1bedf7-84ba-4aa0-8b3a-f8e1d53e7c13",
+		FullName: "Javohir Abdusamatov",
+		Bio: "bio for Abbos",
+		Expertise: "beginner",
+		Location: "nyu york",
+        AvatarUrl: "http://example.com/jack.jpg",
+	}
+	
+
+	if resp.FullName != Wait.FullName || resp.Bio != Wait.Bio || resp.Location != Wait.Location || resp.AvatarUrl != Wait.AvatarUrl {
+		t.Errorf("User profile data does not match. Wait: %+v, got: %+v", Wait, resp)
+	}
 
 
 
-// }
+}
+
+func TestUpdateUserProfileById(t *testing.T) {
+	repo := ConnectDB()
+	test := pb.UserProfile{
+		UserId: "fe1bedf7-84ba-4aa0-8b3a-f8e1d53e7c13",
+	}
+
+	ctx := context.Background()
+	resp, err := repo.UpdateUserProfileById(ctx, &test)
+	if err!= nil {
+        t.Fatalf("Error getting user profile: %v", err)
+	
+    }
+
+	Wait := pb.UserProfileResponse{
+		UserId: "fe1bedf7-84ba-4aa0-8b3a-f8e1d53e7c13",
+		FullName: "Javohir Abdusamatov",
+		Bio: "bio for Abbos",
+		Expertise: "beginner",
+		Location: "nyu york",
+        AvatarUrl: "http://example.com/jack.jpg",
+	}
+
+
+	if resp.FullName != Wait.FullName || resp.Bio != Wait.Bio || resp.Location != Wait.Location || resp.AvatarUrl != Wait.AvatarUrl {
+		t.Errorf("User profile data does not match. Wait: %+v, got: %+v", Wait, resp)
+	}
+
+
+
+}
